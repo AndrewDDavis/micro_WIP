@@ -1,8 +1,9 @@
 # Colors
 
-This help page aims to cover two aspects of micro's syntax highlighting engine:
+This help page aims to cover three aspects of micro's syntax highlighting engine:
 
-* How to create colorschemes and use them.
+* How to use a colorscheme other than the default.
+* How to create new colorschemes.
 * How to create syntax files to add to the list of languages micro can
   highlight.
 
@@ -15,16 +16,15 @@ prompt, and type:
 set colorscheme twilight
 ```
 
-(or whichever colorscheme you choose).
+You may change "twilight" to any colorscheme you choose from those of the
+default set or your own creation. To cycle throught the list of options, use
+`set colorscheme [Tab]`.
 
 Micro comes with a number of colorschemes by default. The colorschemes that you
-can display will depend on what kind of color support your terminal has.
-
-Omit color-link default "[fg color],[bg color]" will make the background color match the terminal's, and transparency if set.
-
-Modern terminals tend to have a palette of 16 user-configurable colors (these
-colors can often be configured in the terminal preferences), and additional
-color support comes in three flavors.
+can display will depend on what kind of color support your terminal has. Modern
+terminals tend to have a palette of 16 user-configurable colors (these colors
+can often be configured in the terminal preferences), and additional color
+support comes in three flavors.
 
 * 16-color: A colorscheme that uses the 16 default colors will always work but
   will only look good if the 16 default colors have been configured to the
@@ -103,10 +103,10 @@ Micro's colorschemes are also extremely simple to create. The default ones can
 be found
 [here](https://github.com/zyedidia/micro/tree/master/runtime/colorschemes).
 
-Custom colorschemes should be placed in the `~/.config/micro/colorschemes`
-directory.
+Custom colorschemes must be placed in the `~/.config/micro/colorschemes`
+directory to be used by micro.
 
-A number of custom directives are placed in a `.micro` file. Colorschemes are 
+A number of custom directives are placed in a `.micro` file. Colorschemes are
 typically only 18-30 lines in total.
 
 To create the colorscheme you need to link highlight groups with
@@ -138,6 +138,9 @@ You can also put bold, italic, or underline in front of the color:
 color-link comment "bold red"
 ```
 
+Omit the `color-link default "[fg color],[bg color]"` line to make the
+background color match the terminal's settings for color and transparency.
+
 ---
 
 There are three different ways to specify the color.
@@ -152,7 +155,7 @@ Then you can use the terminals 256 colors by using their numbers 1-256 (numbers
 
 If the user's terminal supports true color, then you can also specify colors
 exactly using their hex codes. If the terminal is not true color but micro is
-told to use a true color colorscheme it will attempt to map the colors to the 
+told to use a true color colorscheme it will attempt to map the colors to the
 available 256 colors.
 
 Generally colorschemes which require true color terminals to look good are
@@ -196,9 +199,6 @@ Here is a list of the colorscheme groups that you can use:
 * error-message (Color of error messages in the bottom line of the screen)
 * match-brace (Color of matching brackets when `matchbracestyle` is set to `highlight`)
 
-Colorschemes must be placed in the `~/.config/micro/colorschemes` directory to
-be used.
-
 ---
 
 In addition to the main colorscheme groups, there are subgroups that you can
@@ -213,7 +213,7 @@ that for highlighting strings. If it's not found, it will use constant instead.
 Micro tries to match the largest set of groups it can find in the colorscheme
 definitions, so if, for examle `constant.bool.true` is found then micro will
 use that. If `constant.bool.true` is not found but `constant.bool` is found
-micro will use `constant.bool`. If not, it uses `constant`. 
+micro will use `constant.bool`. If not, it uses `constant`.
 
 Here's a list of subgroups used in micro's built-in syntax files.
 
@@ -221,10 +221,10 @@ Here's a list of subgroups used in micro's built-in syntax files.
 * constant.bool
 * constant.bool.true
 * constant.bool.false
-* constant.number 
+* constant.number
 * constant.specialChar
 * constant.string
-* constant.string.url 
+* constant.string.url
 * identifier.class (Also used for functions)
 * identifier.macro
 * identifier.var
@@ -245,7 +245,7 @@ languages.
 
 Micro's builtin syntax highlighting tries very hard to be sane, sensible and
 provide ample coverage of the meaningful elements of a language. Micro has
-syntax files built in for over 100 languages now! However, there may be 
+syntax files built in for over 100 languages now! However, there may be
 situations where you find Micro's highlighting to be insufficient or not to
 your liking. The good news is that you can create your own syntax files, and
 place them in  `~/.config/micro/syntax` and Micro will use those instead.
