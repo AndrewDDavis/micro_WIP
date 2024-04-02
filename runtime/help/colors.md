@@ -131,7 +131,8 @@ If you would like no foreground you can just use a comma with nothing in front:
 color-link comment ",blue"
 ```
 
-You can also put bold, italic, or underline in front of the color:
+The text styles bold, italic, underline, or reverse may also be added in front
+of the color, separated by a space:
 
 ```
 color-link comment "bold red"
