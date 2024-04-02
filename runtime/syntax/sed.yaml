@@ -1,8 +1,8 @@
 filetype: sed
 
-detect: 
+detect:
     filename: "\\.sed$"
-    signature: "^#!.*bin/(env +)?sed( |$)"
+    header: "^#!.*bin/(env +)?sed( |$)"
 
 rules:
     - symbol.operator: "[|^$.*+]"

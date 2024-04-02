@@ -1,8 +1,8 @@
 filetype: nginx
 
-detect: 
+detect:
     filename: "nginx.*\\.conf$|\\.nginx$"
-    signature: "^(server|upstream)[a-z ]*\\{$"
+    header: "^(server|upstream)[a-z ]*\\{$"
 
 rules:
     - preproc: "\\b(events|server|http|location|upstream)[[:space:]]*\\{"

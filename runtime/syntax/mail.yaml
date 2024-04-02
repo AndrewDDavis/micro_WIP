@@ -2,7 +2,7 @@ filetype: mail
 
 detect:
     filename: "(.*/mutt-.*|\\.eml)$"
-    signature: "^From .* \\d+:\\d+:\\d+ \\d+"
+    header: "^From .* \\d+:\\d+:\\d+ \\d+"
 
 rules:
     - type: "^From .*"
@@ -12,7 +12,7 @@ rules:
     - constant.string:
         start: "^Subject:.*"
         end: "$"
-        rules: 
+        rules:
             - constant.specialChar: "\\\\."
     - statement: "<?[^@[:space:]]+@[^[:space:]]+>?"
     - default:

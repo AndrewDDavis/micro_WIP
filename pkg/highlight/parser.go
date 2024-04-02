@@ -39,6 +39,7 @@ type Def struct {
 type Header struct {
 	FileType       string
 	FileNameRegex  *regexp.Regexp
+	HeaderRegex    *regexp.Regexp
 	SignatureRegex *regexp.Regexp
 }
 
@@ -46,6 +47,7 @@ type HeaderYaml struct {
 	FileType string `yaml:"filetype"`
 	Detect   struct {
 		FNameRegexStr     string `yaml:"filename"`
+		HeaderRegexStr    string `yaml:"header"`
 		SignatureRegexStr string `yaml:"signature"`
 	} `yaml:"detect"`
 }
@@ -96,17 +98,21 @@ func init() {
 // A yaml file might take ~400us to parse while a header file only takes ~20us
 func MakeHeader(data []byte) (*Header, error) {
 	lines := bytes.Split(data, []byte{'\n'})
-	if len(lines) < 3 {
+	if len(lines) < 4 {
 		return nil, errors.New("Header file has incorrect format")
 	}
 	header := new(Header)
 	var err error
 	header.FileType = string(lines[0])
 	fnameRegexStr := string(lines[1])
-	signatureRegexStr := string(lines[2])
+	headerRegexStr := string(lines[2])
+	signatureRegexStr := string(lines[3])
 
 	if fnameRegexStr != "" {
 		header.FileNameRegex, err = regexp.Compile(fnameRegexStr)
+	}
+	if err == nil && headerRegexStr != "" {
+		header.HeaderRegex, err = regexp.Compile(headerRegexStr)
 	}
 	if err == nil && signatureRegexStr != "" {
 		header.SignatureRegex, err = regexp.Compile(signatureRegexStr)
@@ -134,6 +140,9 @@ func MakeHeaderYaml(data []byte) (*Header, error) {
 	if hdrYaml.Detect.FNameRegexStr != "" {
 		header.FileNameRegex, err = regexp.Compile(hdrYaml.Detect.FNameRegexStr)
 	}
+	if err == nil && hdrYaml.Detect.HeaderRegexStr != "" {
+		header.HeaderRegex, err = regexp.Compile(hdrYaml.Detect.HeaderRegexStr)
+	}
 	if err == nil && hdrYaml.Detect.SignatureRegexStr != "" {
 		header.SignatureRegex, err = regexp.Compile(hdrYaml.Detect.SignatureRegexStr)
 	}
@@ -149,6 +158,14 @@ func MakeHeaderYaml(data []byte) (*Header, error) {
 func (header *Header) MatchFileName(filename string) bool {
 	if header.FileNameRegex != nil {
 		return header.FileNameRegex.MatchString(filename)
+	}
+
+	return false
+}
+
+func (header *Header) MatchFileHeader(firstLine []byte) bool {
+	if header.HeaderRegex != nil {
+		return header.HeaderRegex.Match(firstLine)
 	}
 
 	return false
@@ -192,9 +209,17 @@ func ParseFile(input []byte) (f *File, err error) {
 		if k == "filetype" {
 			filetype := v.(string)
 
+			if filetype == "" {
+				return nil, errors.New("empty filetype")
+			}
+
 			f.FileType = filetype
 			break
 		}
+	}
+
+	if f.FileType == "" {
+		return nil, errors.New("missing filetype")
 	}
 
 	return f, err
@@ -213,12 +238,12 @@ func ParseDef(f *File, header *Header) (s *Def, err error) {
 		}
 	}()
 
-	rules := f.yamlSrc
+	src := f.yamlSrc
 
 	s = new(Def)
 	s.Header = header
 
-	for k, v := range rules {
+	for k, v := range src {
 		if k == "rules" {
 			inputRules := v.([]interface{})
 
@@ -229,6 +254,11 @@ func ParseDef(f *File, header *Header) (s *Def, err error) {
 
 			s.rules = rules
 		}
+	}
+
+	if s.rules == nil {
+		// allow empty rules
+		s.rules = new(rules)
 	}
 
 	return s, err

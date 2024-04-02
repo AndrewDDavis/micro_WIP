@@ -9,7 +9,7 @@ This help page aims to cover three aspects of micro's syntax highlighting engine
 
 ## Colorschemes
 
-To change your colorscheme, press Ctrl-e in micro to bring up the command
+To change your colorscheme, press `Ctrl-e` in micro to bring up the command
 prompt, and type:
 
 ```
@@ -93,7 +93,7 @@ and set this variable yourself.
 * `solarized-tc`: this is the solarized colorscheme for true color.
 * `atom-dark`: this colorscheme is based off of Atom's "dark" colorscheme.
 * `cmc-tc`: A true colour variant of the cmc theme.  It requires true color to
-  look its best. Use cmc-16 if your terminal doesn't support true color.
+   look its best. Use cmc-16 if your terminal doesn't support true color.
 * `gruvbox-tc`: The true color version of the gruvbox colorscheme
 * `material-tc`: Colorscheme based off of Google's Material Design palette
 
@@ -198,6 +198,9 @@ Here is a list of the colorscheme groups that you can use:
 * message (Color of messages in the bottom line of the screen)
 * error-message (Color of error messages in the bottom line of the screen)
 * match-brace (Color of matching brackets when `matchbracestyle` is set to `highlight`)
+* hlsearch (Color of highlighted search results when `hlsearch` is enabled)
+* tab-error (Color of tab vs space errors when `hltaberrors` is enabled)
+* trailingws (Color of trailing whitespaces when `hltrailingws` is enabled)
 
 ---
 
@@ -237,6 +240,12 @@ Here's a list of subgroups used in micro's built-in syntax files.
 
 In the future, plugins may also be able to use color groups for styling.
 
+---
+
+Last but not least it's even possible to use `include` followed by the
+colorscheme name as string to include a different colorscheme within a new one.
+Additionally the groups can then be extended or overwritten. The `default.micro`
+theme can be seen as an example, which links to the chosen default colorscheme.
 
 ## Syntax files
 
@@ -268,13 +277,40 @@ detect:
 ```
 
 Micro will match this regex against a given filename to detect the filetype.
-You may also provide an optional `signature` regex that will check a certain
-amount of lines of a file to find specific marks. For example:
+
+In addition to the `filename` regex (or even instead of it) you can provide
+a `header` regex that will check the first line of the file. For example:
 
 ```
 detect:
     filename: "\\.ya?ml$"
-    signature: "%YAML"
+    header: "%YAML"
+```
+
+This is useful in cases when the given file name is not sufficient to determine
+the filetype, e.g. with the above example, if a YAML file has no `.yaml`
+extension but may contain a `%YAML` directive in its first line.
+
+`filename` takes precedence over `header`, i.e. if there is a syntax file that
+matches the file with a filetype by the `filename` and another syntax file that
+matches the same file with another filetype by the `header`, the first filetype
+will be used.
+
+Finally, in addition to `filename` and/or `header` (but not instead of them)
+you may also provide an optional `signature` regex which is useful for resolving
+ambiguities when there are multiple syntax files matching the same file with
+different filetypes. If a `signature` regex is given, micro will match a certain
+amount of first lines in the file (this amount is determined by the `detectlimit`
+option) against this regex, and if any of the lines match, this syntax file's
+filetype will be preferred over other matching filetypes.
+
+For example, to distinguish C++ header files from C and Objective-C header files
+that have the same `.h` extension:
+
+```
+detect:
+    filename: "\\.c(c|pp|xx)$|\\.h(h|pp|xx)?$"
+    signature: "namespace|template|public|protected|private"
 ```
 
 ### Syntax rules
@@ -356,16 +392,3 @@ example, the following is possible for html:
     rules:
         - include: "css"
 ```
-
-## Syntax file headers
-
-Syntax file headers are an optimization and it is likely you do not need to
-worry about them.
-
-Syntax file headers are files that contain only the filetype and the detection
-regular expressions for a given syntax file. They have a `.hdr` suffix and are
-used by default only for the pre-installed syntax files. Header files allow
-micro to parse the syntax files much faster when checking the filetype of a
-certain file. Custom syntax files may provide header files in
-`~/.config/micro/syntax` as well but it is not necessary (only do this if you
-have many (100+) custom syntax files and want to improve performance).

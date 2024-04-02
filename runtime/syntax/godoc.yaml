@@ -1,11 +1,11 @@
 # godoc
-# example: go doc -all | micro 
+# example: go doc -all | micro
 
 filetype: godoc
 
 detect:
     filename: "\\.godoc$"
-    signature: package.*import
+    header: package.*import
 
 rules:
     - preproc: "^[^ ].*"
