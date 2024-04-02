@@ -106,11 +106,10 @@ be found
 Custom colorschemes must be placed in the `~/.config/micro/colorschemes`
 directory to be used by micro.
 
-A number of custom directives are placed in a `.micro` file. Colorschemes are
-typically only 18-30 lines in total.
-
-To create the colorscheme you need to link highlight groups with
-actual colors. This is done using the `color-link` command.
+To create the colorscheme, a number of custom directives are placed in a
+`.micro` file. Colorschemes are typically only 18-30 lines in total. The lines
+typically link highlight groups with actual colors using the `color-link`
+command.
 
 For example, to highlight all comments in green, you would use the command:
 
@@ -140,6 +139,12 @@ color-link comment "bold red"
 
 Omit the `color-link default "[fg color],[bg color]"` line to make the
 background color match the terminal's settings for color and transparency.
+
+It's also possible to include a different colorscheme within a new one. This is
+accomplished by using the `include` command followed by the colorscheme name as
+a string. The colorscheme groups can then be extended or overwritten. The
+`default.micro` theme can be seen as an example, which simply links to the
+chosen default colorscheme.
 
 ---
 
@@ -240,12 +245,6 @@ Here's a list of subgroups used in micro's built-in syntax files.
 
 In the future, plugins may also be able to use color groups for styling.
 
----
-
-Last but not least it's even possible to use `include` followed by the
-colorscheme name as string to include a different colorscheme within a new one.
-Additionally the groups can then be extended or overwritten. The `default.micro`
-theme can be seen as an example, which links to the chosen default colorscheme.
 
 ## Syntax files
 
