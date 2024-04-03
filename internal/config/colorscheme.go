@@ -152,7 +152,8 @@ lineLoop:
 
 // StringToStyle returns a style from a string
 // The strings must be in the format "extra foregroundcolor,backgroundcolor"
-// The 'extra' can be bold, reverse, italic or underline
+// The 'extra' can be bold, reverse, italic, underline, dim, or strikethrough
+// Styles defined at github:zyedidia/tcell/blob/master/style.go#L111
 func StringToStyle(str string) tcell.Style {
 	var fg, bg string
 	spaceSplit := strings.Split(str, " ")
@@ -191,11 +192,19 @@ func StringToStyle(str string) tcell.Style {
 	if strings.Contains(str, "italic") {
 		style = style.Italic(true)
 	}
-	if strings.Contains(str, "reverse") {
+	if strings.Contains(str, "reverse") ||
+	   strings.Contains(str, "inverse") {
 		style = style.Reverse(true)
 	}
 	if strings.Contains(str, "underline") {
 		style = style.Underline(true)
+	}
+	if strings.Contains(str, "dim") ||
+	   strings.Contains(str, "faint") {
+		style = style.Dim(true)
+	}
+	if strings.Contains(str, "strikethrough") {
+			style = style.StrikeThrough(true)
 	}
 	return style
 }
